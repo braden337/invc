@@ -1,43 +1,56 @@
 <script lang="ts">
   import store, { type Item } from '../../store';
+  import { onMount } from 'svelte';
 
   const { items: itemsJSON } = store;
+  let input: HTMLInputElement;
 
   $: items = JSON.parse($itemsJSON) as Item[];
 
-  $: newItem = { id: 0, description: '', value: '' } as Item;
+  $: newItem = '';
 
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-  $: safeToAddItem =
-    !Object.values(newItem).some((item) => item.toString().trim() === '') &&
-    !Number.isNaN(+newItem.value);
-
   function addItem() {
-    if (safeToAddItem) {
+    const match = newItem.match(/^(\w+)\s?@\s?(\d+)$/);
+
+    if (match) {
+      let description = match[1];
+      let value = match[2];
+      console.log(description, value);
+
       $itemsJSON = JSON.stringify([
         ...items,
-        { ...newItem, id: items.length > 0 ? Math.max(...items.map((item) => item.id)) + 1 : 1 }
+        {
+          id: items.length > 0 ? Math.max(...items.map((item) => item.id)) + 1 : 1,
+          description,
+          value
+        }
       ]);
+
+      newItem = '';
     }
-    newItem = { id: 0, description: '', value: '' };
+
+    input.focus();
   }
 
   function removeItem(id: number) {
     $itemsJSON = JSON.stringify(items.filter((item) => item.id !== id));
   }
+
+  onMount(() => {
+    input.focus();
+  });
 </script>
 
 <header>
-  <label>
-    Description:
-    <input type="text" bind:value={newItem.description} />
-  </label>
-  <label>
-    Value:
-    <input type="text" bind:value={newItem.value} />
-  </label>
-  <button on:click={addItem} disabled={!safeToAddItem}>Add</button>
+  <form on:submit|preventDefault={addItem}>
+    <label>
+      New Item:
+      <input type="text" bind:this={input} bind:value={newItem} />
+    </label>
+    <input type="submit" value="Add" />
+  </form>
 </header>
 
 {#if items.length > 0}
