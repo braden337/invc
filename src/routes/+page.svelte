@@ -1,14 +1,26 @@
 <script lang="ts">
-  import store from '../store';
+  import store, { type Item } from '../store';
+  import { currency } from '../shared';
   import dayjs, { type ManipulateType } from 'dayjs';
 
-  const { name, address, phone, startDate, num, customer, cadence, project } = store;
+  const {
+    name,
+    address,
+    phone,
+    startDate,
+    num,
+    customer,
+    cadence,
+    project,
+    items: itemsJSON
+  } = store;
 
   $: submissionDate = dayjs($startDate).add(+$num, $cadence as ManipulateType);
   $: dueDate = dayjs($startDate)
     .add(+$num + 1, $cadence as ManipulateType)
     .startOf($cadence as ManipulateType);
 
+  $: items = JSON.parse($itemsJSON) as Item[];
   function increment() {
     $num = (+$num + 1).toString();
   }
@@ -54,6 +66,14 @@
       <p contenteditable bind:innerText={$project} />
     </div>
   </aside>
+  <table>
+    <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+    <tbody>
+      {#each items as item}
+        <tr><td>{item.description}</td><td>{currency.format(+item.value)}</td></tr>
+      {/each}
+    </tbody>
+  </table>
 </main>
 <footer />
 
@@ -72,8 +92,6 @@
     padding: 1rem;
     display: grid;
     gap: 2rem;
-    // background-color: black;
-    // color: white;
   }
 
   [contenteditable] {
@@ -94,7 +112,7 @@
 
   main {
     display: grid;
-    gap: 1rem;
+    gap: 2rem;
     h1 {
       display: flex;
       align-items: center;
@@ -105,6 +123,23 @@
           padding: 0rem 0.25rem;
           font-family: 'Courier New', Courier, monospace;
         }
+      }
+    }
+    table {
+      border: 0.5px solid black;
+      border-spacing: 0;
+      td,
+      th {
+        text-align: left;
+        border: 0.5px solid black;
+        padding: 0.25rem 0.5rem;
+      }
+      th:nth-child(2),
+      td:nth-child(2) {
+        text-align: right;
+      }
+      td:nth-child(2) {
+        font-family: 'Courier New', Courier, monospace;
       }
     }
   }

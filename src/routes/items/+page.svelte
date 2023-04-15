@@ -1,5 +1,6 @@
 <script lang="ts">
   import store, { type Item } from '../../store';
+  import { currency } from '../../shared';
   import { onMount } from 'svelte';
 
   const { items: itemsJSON } = store;
@@ -9,10 +10,8 @@
 
   $: newItem = '';
 
-  const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
   function addItem() {
-    const match = newItem.match(/^(\w+)\s?@\s?(\d+)$/);
+    const match = newItem.match(/^([\w\d\s]+)\s?@\s?([\d\.]+)$/);
 
     if (match) {
       let description = match[1];
@@ -47,9 +46,11 @@
   <form on:submit|preventDefault={addItem}>
     <label>
       New Item:
-      <input type="text" bind:this={input} bind:value={newItem} />
+      <div>
+        <input type="text" bind:this={input} bind:value={newItem} />
+        <input type="submit" value="Add" />
+      </div>
     </label>
-    <input type="submit" value="Add" />
   </form>
 </header>
 
@@ -80,11 +81,6 @@
     label {
       display: grid;
       gap: 0.25rem;
-    }
-    input,
-    select,
-    button {
-      justify-self: start;
     }
   }
 
