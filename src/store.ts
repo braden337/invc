@@ -11,6 +11,10 @@ type Vault = {
   customer: Writable<string>;
   project: Writable<string>;
   items: Writable<string>;
+  bank: Writable<string>;
+  routing: Writable<string>;
+  account: Writable<string>;
+  currency: Writable<string>;
 };
 
 export type Item = {
@@ -36,6 +40,10 @@ const store: Vault = {
   num: writable(localStorage.getItem('num') || '0'),
   project: writable(localStorage.getItem('project') || 'ACME.app'),
   items: writable(localStorage.getItem('items') || '[]'),
+  bank: writable(localStorage.getItem('bank') || 'Gringotts Wizard Bank\n7 Diagon Alley\nLondon, UK'),
+  routing: writable(localStorage.getItem('routing') || '1234'),
+  account: writable(localStorage.getItem('account') || '5678'),
+  currency: writable(localStorage.getItem('currency') || 'USD'),
   customer: writable(
     localStorage.getItem('customer') || 'Mocha Joe\n\n63633 298th Ave  \nMillville, MN\n55957, USA'
   )

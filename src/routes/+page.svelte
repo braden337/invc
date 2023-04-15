@@ -1,6 +1,6 @@
 <script lang="ts">
   import store, { type Item } from '../store';
-  import { currency } from '../shared';
+  import { USD } from '../shared';
   import dayjs, { type ManipulateType } from 'dayjs';
 
   const {
@@ -12,15 +12,34 @@
     customer,
     cadence,
     project,
+    bank,
+    routing,
+    account,
+    currency,
     items: itemsJSON
   } = store;
+
+  let items: Item[] = [];
+  let total = 0;
+  let servicesProvided = '';
 
   $: submissionDate = dayjs($startDate).add(+$num, $cadence as ManipulateType);
   $: dueDate = dayjs($startDate)
     .add(+$num + 1, $cadence as ManipulateType)
     .startOf($cadence as ManipulateType);
 
-  $: items = JSON.parse($itemsJSON) as Item[];
+  $: {
+    servicesProvided = submissionDate.format('MMMM XXXX YYYY');
+
+    let first = submissionDate.startOf('month').format('D');
+    let last = submissionDate.endOf('month').format('D');
+
+    servicesProvided = servicesProvided.replace('XXXX', `${first}...${last}`);
+  }
+
+  $: items = JSON.parse($itemsJSON);
+  $: total = items.reduce((sum, item) => +item.value + sum, 0);
+
   function increment() {
     $num = (+$num + 1).toString();
   }
@@ -70,12 +89,36 @@
     <thead><tr><th>Description</th><th>Amount</th></tr></thead>
     <tbody>
       {#each items as item}
-        <tr><td>{item.description}</td><td>{currency.format(+item.value)}</td></tr>
+        <tr><td>{item.description}</td><td>{USD.format(+item.value)}</td></tr>
       {/each}
     </tbody>
   </table>
+  <h1 style="display: block; text-align: right">Total: {USD.format(total)}</h1>
 </main>
-<footer />
+<footer>
+  <aside>
+    <div id="bank">
+      Bank
+      <pre contenteditable bind:innerText={$bank}>{$bank}</pre>
+    </div>
+    <div id="routing">
+      Routing
+      <pre contenteditable bind:innerText={$routing}>{$routing}</pre>
+    </div>
+    <div id="currency">
+      Currency
+      <p contenteditable bind:innerText={$currency}>{$currency}</p>
+    </div>
+    <div id="account">
+      Account
+      <pre contenteditable bind:innerText={$account}>{$account}</pre>
+    </div>
+    <div id="services_provided">
+      Services Provided
+      <pre>{servicesProvided}</pre>
+    </div>
+  </aside>
+</footer>
 
 <style lang="scss">
   :global(*) {
@@ -91,7 +134,7 @@
   :global(body) {
     padding: 1rem;
     display: grid;
-    gap: 2rem;
+    gap: 5rem;
   }
 
   [contenteditable] {
@@ -154,21 +197,9 @@
         font-weight: initial;
       }
     }
-    #for {
+    #for,
+    #bank {
       grid-row: span 2;
-    }
-
-    #num {
-      button {
-        // font-family: 'Courier New', Courier, monospace;
-        // width: 1rem;
-        // font-size: 1rem;
-      }
-      // @media print {
-      //   button {
-      //     display: none;
-      //   }
-      // }
     }
   }
 

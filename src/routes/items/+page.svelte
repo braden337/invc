@@ -1,6 +1,6 @@
 <script lang="ts">
   import store, { type Item } from '../../store';
-  import { currency } from '../../shared';
+  import { USD } from '../../shared';
   import { onMount } from 'svelte';
 
   const { items: itemsJSON } = store;
@@ -62,7 +62,7 @@
         {#each items as item, i}
           <tr>
             <td>{item.description}</td>
-            <td>{currency.format(+item.value)}</td>
+            <td>{USD.format(+item.value)}</td>
             <td class="delete">
               <button on:click={() => removeItem(item.id)}>X</button>
             </td>
