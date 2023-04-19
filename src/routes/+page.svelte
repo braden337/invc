@@ -29,12 +29,17 @@
     .startOf($cadence as ManipulateType);
 
   $: {
-    servicesProvided = submissionDate.format('MMMM XXXX YYYY');
+    let format = 'YYYY';
 
-    let first = submissionDate.startOf('month').format('D');
-    let last = submissionDate.endOf('month').format('D');
+    switch ($cadence) {
+      case 'month':
+        format = `MMMM ${format}`;
+        break;
+      case 'day':
+        format = `MMMM D ${format}`;
+    }
 
-    servicesProvided = servicesProvided.replace('XXXX', `${first}...${last}`);
+    servicesProvided = submissionDate.format(format);
   }
 
   $: items = JSON.parse($itemsJSON);
@@ -74,11 +79,11 @@
     </div>
     <div id="submitted">
       Submitted
-      <p>{submissionDate.format('YYYY-MM-DD')}</p>
+      <p>{submissionDate.format('MMMM D YYYY')}</p>
     </div>
     <div id="due">
       Due
-      <p>{dueDate.format('YYYY-MM-DD')}</p>
+      <p>{dueDate.format('MMMM D YYYY')}</p>
     </div>
     <div id="project">
       Project
