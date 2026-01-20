@@ -11,7 +11,7 @@
   $: newItem = '';
 
   function addItem() {
-    const match = newItem.match(/^([\w\d\s]+)\s?@\s?([\d\.]+)$/);
+    const match = newItem.match(/^([\w\d\s]+)\s?@\s?(-?[\d\.]+)$/);
 
     if (match) {
       let description = match[1];
