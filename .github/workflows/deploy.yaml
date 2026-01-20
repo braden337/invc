@@ -17,7 +17,7 @@ jobs:
           ref: ${{ github.event.client_payload.ref }}
 
       - name: Use cached pnpm modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
